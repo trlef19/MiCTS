@@ -9,7 +9,7 @@ Enable Circle to Search for Xiaomi System Launcher
 1. In `Home Screen Settings - System Navigation`, select `Gestures` and turn off `Hide full screen indicator`
 
 
-2. Install the latest version of [Google](https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox), turn on `Autostart` in `App info` if it exists
+2. Install the latest version of [Google](https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox). In Google's `App info`, turn on `Autostart` if it exists and select `No restrictions` in `Battery saver`
 
 
 3. Install and enable the module, restart your phone
