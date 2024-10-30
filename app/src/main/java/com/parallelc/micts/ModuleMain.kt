@@ -20,20 +20,20 @@ import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.SystemServerLoadedParam
 
 @SuppressLint("PrivateApi")
-fun triggerCircleToSearch() {
+fun triggerCircleToSearch(): Boolean {
     val bundle = Bundle()
     bundle.putLong("invocation_time_ms", SystemClock.elapsedRealtime())
     bundle.putInt("omni.entry_point", 1)
     val iVims = Class.forName("com.android.internal.app.IVoiceInteractionManagerService\$Stub")
     val asInterfaceMethod = iVims.getMethod("asInterface", IBinder::class.java)
     val getServiceMethod = Class.forName("android.os.ServiceManager").getMethod("getService", String::class.java)
-    val vimsInstance = asInterfaceMethod.invoke(null, getServiceMethod.invoke(null, "voiceinteraction")) ?: return
+    val vimsInstance = asInterfaceMethod.invoke(null, getServiceMethod.invoke(null, "voiceinteraction")) ?: return false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         val showSessionFromSession = vimsInstance.javaClass.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Integer.TYPE, String::class.java)
-        showSessionFromSession.invoke(vimsInstance, null, bundle, 7, "hyperOS_home")
+        return showSessionFromSession.invoke(vimsInstance, null, bundle, 7, "hyperOS_home") as Boolean
     } else {
         val showSessionFromSession = vimsInstance.javaClass.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Integer.TYPE)
-        showSessionFromSession.invoke(vimsInstance, null, bundle, 7)
+        return showSessionFromSession.invoke(vimsInstance, null, bundle, 7) as Boolean
     }
 }
 
