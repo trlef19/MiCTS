@@ -52,8 +52,8 @@ class LongPressHomeHooker {
 
                 @JvmStatic
                 @AfterInvocation
-                fun after(callback: AfterHookCallback, unhook: MethodUnhooker<Method>?) {
-                    unhook?.unhook()
+                fun after(callback: AfterHookCallback, unhooker: MethodUnhooker<Method>?) {
+                    unhooker?.unhook()
                 }
             }
         }

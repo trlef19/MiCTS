@@ -7,12 +7,11 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.SystemClock
 import android.view.MotionEvent
-import com.parallelc.micts.hooker.ContextualSearchIntentHooker
 import com.parallelc.micts.hooker.LongPressHomeHooker
 import com.parallelc.micts.hooker.NavStubViewHooker
-import com.parallelc.micts.hooker.ResourcesHooker
 import com.parallelc.micts.hooker.ReturnFalseHooker
 import com.parallelc.micts.hooker.ReturnTrueHooker
+import com.parallelc.micts.hooker.VIMSHooker
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
@@ -51,10 +50,9 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
         runCatching {
             LongPressHomeHooker.hook(param)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
-            ResourcesHooker.hook(param)
-            val vims = param.classLoader.loadClass("com.android.server.voiceinteraction.VoiceInteractionManagerService\$VoiceInteractionManagerServiceStub")
-            hook(vims.getDeclaredMethod("getContextualSearchIntent", Bundle::class.java), ContextualSearchIntentHooker::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                VIMSHooker.hook(param)
+            }
         }.onFailure { e ->
             log("hook system fail", e)
         }
