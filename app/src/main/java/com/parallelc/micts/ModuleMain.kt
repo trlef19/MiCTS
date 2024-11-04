@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.SystemClock
-import android.view.MotionEvent
 import com.parallelc.micts.hooker.LongPressHomeHooker
 import com.parallelc.micts.hooker.NavStubViewHooker
 import com.parallelc.micts.hooker.ReturnFalseHooker
@@ -74,12 +73,7 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
         }
 
         runCatching {
-            val navStubView = param.classLoader.loadClass("com.miui.home.recents.NavStubView")
-            runCatching { navStubView.getDeclaredField("mCheckLongPress") }
-                .onSuccess { throw Exception("mCheckLongPress exists") }
-                .onFailure {
-                    hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), NavStubViewHooker::class.java)
-                }
+            NavStubViewHooker.hook(param)
         }.onFailure { e ->
             log("hook NavStubView fail", e)
         }

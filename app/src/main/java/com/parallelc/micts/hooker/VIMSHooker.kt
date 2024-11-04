@@ -18,8 +18,8 @@ import java.lang.reflect.Method
 
 class VIMSHooker {
     companion object {
-        private var contextualSearchKey: Int? = null
-        private var contextualSearchPackageName: Int? = null
+        private var contextualSearchKey: Int = 0
+        private var contextualSearchPackageName: Int = 0
 
         @SuppressLint("PrivateApi")
         fun hook(param: SystemServerLoadedParam) {
@@ -59,14 +59,12 @@ class VIMSHooker {
                 @JvmStatic
                 @BeforeInvocation
                 fun before(callback: BeforeHookCallback) {
-                    callback.args[0]?.let {
-                        when (it) {
-                            contextualSearchKey -> {
-                                callback.returnAndSkip("omni.entry_point")
-                            }
-                            contextualSearchPackageName -> {
-                                callback.returnAndSkip("com.google.android.googlequicksearchbox")
-                            }
+                    when (callback.args[0]) {
+                        contextualSearchKey -> {
+                            callback.returnAndSkip("omni.entry_point")
+                        }
+                        contextualSearchPackageName -> {
+                            callback.returnAndSkip("com.google.android.googlequicksearchbox")
                         }
                     }
                 }
