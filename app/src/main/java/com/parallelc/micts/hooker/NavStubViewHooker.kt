@@ -13,7 +13,6 @@ import io.github.libxposed.api.annotations.XposedHooker
 import java.lang.reflect.Field
 import kotlin.math.abs
 
-@XposedHooker
 class NavStubViewHooker {
     companion object {
         private lateinit var mCurrAction: Field
@@ -41,6 +40,7 @@ class NavStubViewHooker {
                 }
         }
 
+        @XposedHooker
         class OnTouchEventHooker : Hooker {
             companion object {
                 private val mCheckLongPress = Runnable {
