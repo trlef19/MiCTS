@@ -2,7 +2,7 @@
 
 [简体中文](/README.md)&nbsp;&nbsp;|&nbsp;&nbsp;English
 
-Enable Circle to Search for Xiaomi System Launcher
+Enable Circle to Search for Xiaomi System Launcher / POCO Launcher
 
 ## Usage
 
