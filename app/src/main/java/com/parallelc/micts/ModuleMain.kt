@@ -59,7 +59,7 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
     override fun onPackageLoaded(param: PackageLoadedParam) {
         super.onPackageLoaded(param)
-        if (param.packageName != "com.miui.home" || !param.isFirstPackage) return
+        if ((param.packageName != "com.miui.home" && param.packageName != "com.mi.android.globallauncher") || !param.isFirstPackage) return
 
         runCatching {
             val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
