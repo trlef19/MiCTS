@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">MiCTS</string>
-    <string name="xposed_description">Enable Circle to Search for Xiaomi System Launcher</string>
+    <string name="xposed_description">Enable Circle to Search for Xiaomi System / POCO Launcher\nGitHub @parallelcc</string>
 </resources>

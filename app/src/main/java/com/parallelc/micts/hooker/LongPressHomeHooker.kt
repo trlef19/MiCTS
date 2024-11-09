@@ -33,7 +33,7 @@ class LongPressHomeHooker {
                 @JvmStatic
                 @BeforeInvocation
                 fun before(callback: BeforeHookCallback) {
-                    callback.returnAndSkip(triggerCircleToSearch())
+                    callback.returnAndSkip(triggerCircleToSearch(1))
                 }
             }
         }

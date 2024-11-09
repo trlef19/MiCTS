@@ -6,10 +6,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.SystemClock
+import com.parallelc.micts.hooker.InvokeOmniHooker
 import com.parallelc.micts.hooker.LongPressHomeHooker
 import com.parallelc.micts.hooker.NavStubViewHooker
-import com.parallelc.micts.hooker.ReturnFalseHooker
-import com.parallelc.micts.hooker.ReturnTrueHooker
 import com.parallelc.micts.hooker.VIMSHooker
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
@@ -18,10 +17,10 @@ import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.SystemServerLoadedParam
 
 @SuppressLint("PrivateApi")
-fun triggerCircleToSearch(): Boolean {
+fun triggerCircleToSearch(entryPoint: Int): Boolean {
     val bundle = Bundle()
     bundle.putLong("invocation_time_ms", SystemClock.elapsedRealtime())
-    bundle.putInt("omni.entry_point", 1)
+    bundle.putInt("omni.entry_point", entryPoint)
     val iVims = Class.forName("com.android.internal.app.IVoiceInteractionManagerService\$Stub")
     val asInterfaceMethod = iVims.getMethod("asInterface", IBinder::class.java)
     val getServiceMethod = Class.forName("android.os.ServiceManager").getMethod("getService", String::class.java)
@@ -63,10 +62,7 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
         runCatching {
             val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
-            hook(circleToSearchHelper.getDeclaredMethod("isSceneForbid", Context::class.java, Int::class.java), ReturnFalseHooker::class.java)
-            hook(circleToSearchHelper.getDeclaredMethod("hasCtsFeature", Context::class.java), ReturnTrueHooker::class.java)
-            hook(circleToSearchHelper.getDeclaredMethod("isSettingsLongPressHomeAssistantEnabled", Context::class.java), ReturnTrueHooker::class.java)
-            hook(circleToSearchHelper.getDeclaredMethod("isThirdHome", Context::class.java), ReturnFalseHooker::class.java)
+            hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)
             return
         }.onFailure { e ->
             log("hook CircleToSearchHelper fail", e)

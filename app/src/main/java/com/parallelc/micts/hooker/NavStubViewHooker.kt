@@ -45,7 +45,7 @@ class NavStubViewHooker {
             companion object {
                 private val mCheckLongPress = Runnable {
                     runCatching {
-                        triggerCircleToSearch()
+                        triggerCircleToSearch(1)
                     }.onFailure { e ->
                         module.log("NavStubViewHooker mCheckLongPress fail", e)
                     }
