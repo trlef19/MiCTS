@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.parallelc.micts"
-        minSdk = 27
+        minSdk = 28
         targetSdk = 35
         versionCode = commitCount
         versionName = latestTag
@@ -61,4 +61,5 @@ android {
 dependencies {
     compileOnly(project(":libxposed-compat"))
     compileOnly(libs.libxposed.api)
+    implementation(libs.hiddenapibypass)
 }

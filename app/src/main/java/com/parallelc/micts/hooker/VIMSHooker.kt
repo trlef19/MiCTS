@@ -3,6 +3,7 @@ package com.parallelc.micts.hooker
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Resources
+import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import com.parallelc.micts.module
@@ -38,6 +39,9 @@ class VIMSHooker {
                 @BeforeInvocation
                 fun before(callback: BeforeHookCallback) : MethodUnhooker<Method>? {
                     runCatching {
+                        if ((callback.args[1] as Bundle).getBoolean("micts_trigger", false)) {
+                            Binder.clearCallingIdentity()
+                        }
                         return module.hook(Resources::class.java.getDeclaredMethod("getString", Int::class.java), GetStringHooker::class.java)
                     }.onFailure { e ->
                         module.log("hook resources fail", e)
