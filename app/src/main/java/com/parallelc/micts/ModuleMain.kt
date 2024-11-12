@@ -41,20 +41,39 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
     override fun onPackageLoaded(param: PackageLoadedParam) {
         super.onPackageLoaded(param)
-        if ((param.packageName != "com.miui.home" && param.packageName != "com.mi.android.globallauncher") || !param.isFirstPackage) return
+        if (!param.isFirstPackage) return
 
-        runCatching {
-            val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
-            hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)
-            return
-        }.onFailure { e ->
-            log("hook CircleToSearchHelper fail", e)
-        }
+        when (param.packageName) {
+            "com.miui.home", "com.mi.android.globallauncher" -> {
+                runCatching {
+                    val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
+                    hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)
+                    return
+                }.onFailure { e ->
+                    log("hook CircleToSearchHelper fail", e)
+                }
 
-        runCatching {
-            NavStubViewHooker.hook(param)
-        }.onFailure { e ->
-            log("hook NavStubView fail", e)
+                runCatching {
+                    NavStubViewHooker.hook(param)
+                }.onFailure { e ->
+                    log("hook NavStubView fail", e)
+                }
+            }
+            "com.google.android.googlequicksearchbox" -> {
+                val buildClass = param.classLoader.loadClass("android.os.Build")
+                val MANUFACTURER = buildClass.getDeclaredField("MANUFACTURER")
+                MANUFACTURER.isAccessible = true
+                MANUFACTURER.set(null, "Google")
+                val BRAND = buildClass.getDeclaredField("BRAND")
+                BRAND.isAccessible = true
+                BRAND.set(null, "google")
+                val MODEL = buildClass.getDeclaredField("MODEL")
+                MODEL.isAccessible = true
+                MODEL.set(null, "Pixel 8 Pro")
+                val DEVICE = buildClass.getDeclaredField("DEVICE")
+                DEVICE.isAccessible = true
+                DEVICE.set(null, "husky")
+            }
         }
     }
 }
