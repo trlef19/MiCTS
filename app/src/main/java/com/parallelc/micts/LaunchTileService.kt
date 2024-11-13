@@ -13,6 +13,7 @@ class LaunchTileService : TileService() {
 
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("from_tile", true)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
             startActivityAndCollapse(pendingIntent)
