@@ -12,7 +12,7 @@ Trigger Circle to Search on any Android 9–15 device
 
 
 2. Install and launch MiCTS
-   - If you're lucky, Circle to Search can be triggered directly without root
+   - If you're lucky, Circle to Search can be triggered directly without LSPosed
    - Otherwise, activate the module in LSPosed, enable `Device spoof for Google` in the MiCTS settings, and force restart Google
    - If it still doesn't work, try clearing Google’s data, then launch Google and force restart it
 
