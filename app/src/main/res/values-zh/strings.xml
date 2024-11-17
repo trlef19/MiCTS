@@ -1,6 +1,6 @@
 <resources>
     <string name="tile_label">圈定即搜</string>
-    <string name="xposed_description">小米系统桌面开启圈定即搜（Circle to Search）功能\nGitHub @parallelcc</string>
+    <string name="xposed_description">在任意Android 9–15设备上触发圈定即搜（Circle to Search）功能</string>
     <string name="title_activity_settings">设置</string>
 
     <string name="trigger_failed">触发失败！</string>
