@@ -1,12 +1,29 @@
 [versions]
-agp = "8.6.1"
+accompanist-drawablepainter = "0.36.0"
+agp = "8.7.2"
 hiddenapibypass = "4.3"
-kotlin = "1.9.0"
+kotlin = "2.0.0"
 xposed-api = "100"
+xposed-service = "100-1.0.0"
+lifecycle-runtime-ktx = "2.8.7"
+activity-compose = "1.9.3"
+compose-bom = "2024.11.00"
+animation-core-android = "1.7.5"
+animation-android = "1.7.5"
 
 [libraries]
 hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "xposed-api" }
+libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "xposed-service" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+material3 = { group = "androidx.compose.material3", name = "material3" }
+animation-core-android = { group = "androidx.compose.animation", name = "animation-core-android", version.ref = "animation-core-android" }
+animation-android = { group = "androidx.compose.animation", name = "animation-android", version.ref = "animation-android" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist-drawablepainter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -14,4 +31,5 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 lsplugin-jgit = { id = "org.lsposed.lsplugin.jgit", version = "1.1" }
 lsplugin-apksign = { id = "org.lsposed.lsplugin.apksign", version = "1.4" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

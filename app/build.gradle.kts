@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.lsplugin.jgit)
     alias(libs.plugins.lsplugin.apksign)
+    alias(libs.plugins.kotlin.compose)
 }
 
 apksign {
@@ -56,10 +57,24 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 }
 
 dependencies {
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.material3)
+    implementation(libs.animation.core.android)
+    implementation(libs.animation.android)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.accompanist.drawablepainter)
     compileOnly(project(":libxposed-compat"))
     compileOnly(libs.libxposed.api)
+    implementation(libs.libxposed.service)
     implementation(libs.hiddenapibypass)
 }

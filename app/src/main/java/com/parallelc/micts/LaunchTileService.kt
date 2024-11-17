@@ -5,9 +5,10 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.TileService
+import com.parallelc.micts.ui.activity.MainActivity
 
 class LaunchTileService : TileService() {
-    @SuppressLint("PrivateApi", "StartActivityAndCollapseDeprecated")
+    @SuppressLint("StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
 

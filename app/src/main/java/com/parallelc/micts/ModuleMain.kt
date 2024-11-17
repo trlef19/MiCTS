@@ -2,6 +2,15 @@ package com.parallelc.micts
 
 import android.content.Context
 import android.os.Build
+import com.parallelc.micts.config.TriggerService
+import com.parallelc.micts.config.XposedConfig.CONFIG_NAME
+import com.parallelc.micts.config.XposedConfig.DEFAULT_CONFIG
+import com.parallelc.micts.config.XposedConfig.KEY_DEVICE_SPOOF
+import com.parallelc.micts.config.XposedConfig.KEY_GESTURE_TRIGGER
+import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_BRAND
+import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_DEVICE
+import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_MANUFACTURER
+import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_MODEL
 import com.parallelc.micts.hooker.InvokeOmniHooker
 import com.parallelc.micts.hooker.LongPressHomeHooker
 import com.parallelc.micts.hooker.NavStubViewHooker
@@ -12,7 +21,7 @@ import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.SystemServerLoadedParam
 
-lateinit var module: ModuleMain
+var module: ModuleMain? = null
 
 class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule(base, param) {
 
@@ -23,7 +32,7 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
     override fun onSystemServerLoaded(param: SystemServerLoadedParam) {
         super.onSystemServerLoaded(param)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        if (TriggerService.getSupportedServices().contains(TriggerService.CSHelper)) {
             runCatching {
                 VIMSHooker.hook(param)
             }.onFailure { e ->
@@ -43,8 +52,11 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
         super.onPackageLoaded(param)
         if (!param.isFirstPackage) return
 
+        val prefs = getRemotePreferences(CONFIG_NAME)
+
         when (param.packageName) {
             "com.miui.home", "com.mi.android.globallauncher" -> {
+                if (!prefs.getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) return
                 runCatching {
                     val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
                     hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)
@@ -60,19 +72,20 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
                 }
             }
             "com.google.android.googlequicksearchbox" -> {
+                if (!prefs.getBoolean(KEY_DEVICE_SPOOF, DEFAULT_CONFIG[KEY_DEVICE_SPOOF] as Boolean)) return
                 val buildClass = param.classLoader.loadClass("android.os.Build")
                 val MANUFACTURER = buildClass.getDeclaredField("MANUFACTURER")
                 MANUFACTURER.isAccessible = true
-                MANUFACTURER.set(null, "Google")
+                MANUFACTURER.set(null, prefs.getString(KEY_SPOOF_MANUFACTURER, DEFAULT_CONFIG[KEY_SPOOF_MANUFACTURER] as String))
                 val BRAND = buildClass.getDeclaredField("BRAND")
                 BRAND.isAccessible = true
-                BRAND.set(null, "google")
+                BRAND.set(null, prefs.getString(KEY_SPOOF_BRAND, DEFAULT_CONFIG[KEY_SPOOF_BRAND] as String))
                 val MODEL = buildClass.getDeclaredField("MODEL")
                 MODEL.isAccessible = true
-                MODEL.set(null, "Pixel 8 Pro")
+                MODEL.set(null, prefs.getString(KEY_SPOOF_MODEL, DEFAULT_CONFIG[KEY_SPOOF_MODEL] as String))
                 val DEVICE = buildClass.getDeclaredField("DEVICE")
                 DEVICE.isAccessible = true
-                DEVICE.set(null, "husky")
+                DEVICE.set(null, prefs.getString(KEY_SPOOF_DEVICE, DEFAULT_CONFIG[KEY_SPOOF_DEVICE] as String))
             }
         }
     }

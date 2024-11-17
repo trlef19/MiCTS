@@ -3,8 +3,11 @@ package com.parallelc.micts.hooker
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import com.parallelc.micts.config.XposedConfig.CONFIG_NAME
+import com.parallelc.micts.config.XposedConfig.DEFAULT_CONFIG
+import com.parallelc.micts.config.XposedConfig.KEY_GESTURE_TRIGGER
 import com.parallelc.micts.module
-import com.parallelc.micts.triggerCircleToSearch
+import com.parallelc.micts.ui.activity.triggerCircleToSearch
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import io.github.libxposed.api.XposedInterface.Hooker
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
@@ -36,7 +39,7 @@ class NavStubViewHooker {
                     mCurrY.isAccessible = true
                     mInitY = navStubView.getDeclaredField("mInitY")
                     mInitY.isAccessible = true
-                    module.hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), OnTouchEventHooker::class.java)
+                    module!!.hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), OnTouchEventHooker::class.java)
                 }
         }
 
@@ -44,10 +47,8 @@ class NavStubViewHooker {
         class OnTouchEventHooker : Hooker {
             companion object {
                 private val mCheckLongPress = Runnable {
-                    runCatching {
+                    if (module!!.getRemotePreferences(CONFIG_NAME).getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) {
                         triggerCircleToSearch(1)
-                    }.onFailure { e ->
-                        module.log("NavStubViewHooker mCheckLongPress fail", e)
                     }
                 }
 
@@ -67,7 +68,7 @@ class NavStubViewHooker {
                             else -> view.removeCallbacks(mCheckLongPress)
                         }
                     }.onFailure { e ->
-                        module.log("NavStubViewHooker onTouchEvent fail", e)
+                        module!!.log("NavStubViewHooker onTouchEvent fail", e)
                     }
                 }
             }

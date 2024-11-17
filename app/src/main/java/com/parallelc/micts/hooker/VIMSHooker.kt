@@ -1,11 +1,14 @@
 package com.parallelc.micts.hooker
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.res.Resources
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import com.parallelc.micts.config.TriggerService
+import com.parallelc.micts.config.XposedConfig.CONFIG_NAME
+import com.parallelc.micts.config.XposedConfig.DEFAULT_CONFIG
+import com.parallelc.micts.config.XposedConfig.KEY_TRIGGER_SERVICE
 import com.parallelc.micts.module
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import io.github.libxposed.api.XposedInterface.BeforeHookCallback
@@ -28,8 +31,7 @@ class VIMSHooker {
             val rString = param.classLoader.loadClass("com.android.internal.R\$string")
             contextualSearchKey = rString.getField("config_defaultContextualSearchKey").getInt(null)
             contextualSearchPackageName = rString.getField("config_defaultContextualSearchPackageName").getInt(null)
-            module.hook(vims.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Integer.TYPE, String::class.java), ShowSessionHooker::class.java)
-            module.hook(vims.getDeclaredMethod("getContextualSearchIntent", Bundle::class.java), ContextualSearchIntentHooker::class.java)
+            module!!.hook(vims.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Integer.TYPE, String::class.java), ShowSessionHooker::class.java)
         }
 
         @XposedHooker
@@ -38,15 +40,13 @@ class VIMSHooker {
                 @JvmStatic
                 @BeforeInvocation
                 fun before(callback: BeforeHookCallback) : MethodUnhooker<Method>? {
-                    runCatching {
-                        if ((callback.args[1] as Bundle).getBoolean("micts_trigger", false)) {
-                            Binder.clearCallingIdentity()
-                        }
-                        return module.hook(Resources::class.java.getDeclaredMethod("getString", Int::class.java), GetStringHooker::class.java)
+                    return runCatching {
+                        if (!(callback.args[1] as Bundle).getBoolean("micts_trigger", false)) return@runCatching null
+                        Binder.clearCallingIdentity()
+                        module!!.hook(Resources::class.java.getDeclaredMethod("getString", Int::class.java), GetStringHooker::class.java)
                     }.onFailure { e ->
-                        module.log("hook resources fail", e)
-                    }
-                    return null
+                        module!!.log("hook resources fail", e)
+                    }.getOrNull()
                 }
 
                 @JvmStatic
@@ -65,23 +65,13 @@ class VIMSHooker {
                 fun before(callback: BeforeHookCallback) {
                     when (callback.args[0]) {
                         contextualSearchKey -> {
-                            callback.returnAndSkip("omni.entry_point")
+                            val triggerService = module!!.getRemotePreferences(CONFIG_NAME).getInt(KEY_TRIGGER_SERVICE, DEFAULT_CONFIG[KEY_TRIGGER_SERVICE] as Int)
+                            callback.returnAndSkip(if (triggerService != TriggerService.VIS.ordinal) "omni.entry_point" else "")
                         }
                         contextualSearchPackageName -> {
                             callback.returnAndSkip("com.google.android.googlequicksearchbox")
                         }
                     }
-                }
-            }
-        }
-
-        @XposedHooker
-        class ContextualSearchIntentHooker : Hooker {
-            companion object {
-                @JvmStatic
-                @AfterInvocation
-                fun after(callback: AfterHookCallback) {
-                    (callback.result as Intent?)?.putExtra("com.android.contextualsearch.flag_secure_found", false)
                 }
             }
         }
