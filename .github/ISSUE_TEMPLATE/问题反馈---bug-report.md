@@ -8,14 +8,17 @@ assignees: ''
 ---
 
 **问题描述 / Describe the bug**
-> 确认已经尝试过README中的选项，并且没有使用其他限制后台启动的模块或软件
-> Make sure you have tried the options in the README, and no other modules or apps that restrict background startup are being used
+> 确认已设置Google为默认助理应用，并且没有使用其他限制后台启动的模块或软件
+> Make sure you have set Google as the default assistant app, and no other modules or apps that restrict background startup are being used
 
 
-**是否可以通过小白条触发 / Can it be triggered by the navigation handle**
+**MiCTS设置页面截图 / Screenshot of the MiCTS settings**
 
 
-**是否可以通过Home键触发 / Can it be triggered by the home button**
+**屏幕边缘是否闪了 / Did the screen edge flash?**
+
+
+**是否可以通过其他方式触发 / Can it be triggered by other methods?**
 
 
 **设备型号 / Device model**
@@ -27,7 +30,7 @@ assignees: ''
 **Android 版本 / Android version**
 
 
-**桌面版本 / Launcher version**
+**桌面版本（小米设备） / Launcher version (Xiaomi devices)**
 
 
 **LSPosed日志 / LSPosed logs**
