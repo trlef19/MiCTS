@@ -51,3 +51,23 @@ Need to activate the module in LSPosed
    - Brand: Modify the `ro.product.brand` value that Google reads
    - Model: Modify the `ro.product.model` value that Google reads
    - Device: Modify the `ro.product.device` value that Google reads
+
+## FAQ
+
+### Does it require root?
+
+As mentioned in step 2 of [How to Use](#How-to-Use), it's possible to trigger without root, depending on your device's configuration, for example, many Xiaomi devices can trigger directly without root, so you can give it a try. However, if it doesn't work, it's likely because your device didn't pass Google's device check. In this case, you'll need device spoof, which is what the LSPosed module provides
+
+### Prompt "Trigger failed!"
+
+Most likely because Google is not set as the default assistant, check it
+
+### Google assistant appears instead of Circle to Search
+
+Ensure that Google is the latest version
+
+### Sometimes, the screen edge flashed but did not trigger successfully, the interface appeared after opening Google
+
+This is likely due to the tombstone mechanism. Check if your device has related settings and add Google to the whitelist, such as selecting "No restrictions" in battery saver
+
+This issue should not occur when the `System trigger service` is set to `CSHelper` in the Module Settings
