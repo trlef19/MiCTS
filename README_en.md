@@ -1,5 +1,7 @@
 # MiCTS
 
+[![Downloads](https://img.shields.io/github/downloads/parallelcc/MiCTS/total)](https://github.com/parallelcc/MiCTS/releases) [![Release](https://img.shields.io/github/v/release/parallelcc/MiCTS)](https://github.com/parallelcc/MiCTS/releases/latest)
+
 [简体中文](/README.md)&nbsp;&nbsp;|&nbsp;&nbsp;English
 
 Trigger Circle to Search on any Android 9–15 device
@@ -71,3 +73,13 @@ Ensure that Google is the latest version
 This is likely due to the tombstone mechanism. Check if your device has related settings and add Google to the whitelist, such as selecting "No restrictions" in battery saver
 
 This issue should not occur when the `System trigger service` is set to `CSHelper` in the Module Settings
+
+## Star History
+
+<a href="https://star-history.com/#parallelcc/micts&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date" />
+ </picture>
+</a>

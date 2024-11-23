@@ -1,5 +1,7 @@
 # MiCTS
 
+[![Downloads](https://img.shields.io/github/downloads/parallelcc/MiCTS/total)](https://github.com/parallelcc/MiCTS/releases) [![Release](https://img.shields.io/github/v/release/parallelcc/MiCTS)](https://github.com/parallelcc/MiCTS/releases/latest)
+
 简体中文&nbsp;&nbsp;|&nbsp;&nbsp;[English](https://github.com/parallelcc/MiCTS/blob/main/README_en.md)
 
 在任意Android 9–15设备上触发圈定即搜（Circle to Search）功能
@@ -57,7 +59,7 @@
 
 ### 需要root吗？
 
-正如使用方法第2步中所说，没有root的情况下也可能直接成功触发，这取决于设备的配置，像很多小米设备都可以无需root直接触发，所以你可以尝试一下。但如果不行的话，那原因大概就是没有通过Google的设备检查，因此需要进行机型伪装，这就需要使用LSPosed模块里的功能
+正如[使用方法](#使用方法)第2步中所说，没有root的情况下也可能直接成功触发，这取决于设备的配置，像很多小米设备都可以无需root直接触发，所以你可以尝试一下。但如果不行的话，那原因大概就是没有通过Google的设备检查，因此需要进行机型伪装，这就需要使用LSPosed模块里的功能
 
 ### 提示“触发失败！”
 
@@ -69,4 +71,14 @@ Google不是最新版，更新一下
 
 ### 有时屏幕边缘会闪，但无法成功触发，手动打开Google后才会出现刚才圈定即搜的界面
 
-原因应该是墓碑机制导致的，看看手机有没有相关的设置，可以把Google加到白名单里，比如电池优化选择无限制等，在模块里`系统触发服务`选择`CSHelper`应该没有这个问题
+原因应该是墓碑机制导致的，看看手机有没有相关的设置可以把Google加到白名单里，比如电池优化选择无限制等，在模块设置里`系统触发服务`使用`CSHelper`应该没有这个问题
+
+## Star History
+
+<a href="https://star-history.com/#parallelcc/micts&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=parallelcc/micts&type=Date" />
+ </picture>
+</a>
