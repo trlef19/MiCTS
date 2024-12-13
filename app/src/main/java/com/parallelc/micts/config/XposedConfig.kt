@@ -8,7 +8,15 @@ enum class TriggerService(val isSupported: Boolean) {
     VIS(true),
     @SuppressLint("DiscouragedApi")
     CSHelper(Resources.getSystem().getIdentifier("config_defaultContextualSearchKey", "string", "android") != 0),
-    ContextualSearchService(false);
+    @SuppressLint("PrivateApi")
+    CSService(
+        try {
+            Class.forName("android.app.contextualsearch.ContextualSearchManager")
+            true
+        } catch (_: Exception) {
+            false
+        }
+    );
 
     companion object {
         fun getSupportedServices(): List<TriggerService> {

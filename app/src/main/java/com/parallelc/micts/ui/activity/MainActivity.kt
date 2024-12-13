@@ -33,11 +33,7 @@ fun triggerCircleToSearch(entryPoint: Int): Boolean {
         }
     }.onFailure { e ->
         val errMsg = "triggerCircleToSearch failed: " + e.stackTraceToString()
-        if (module != null) {
-            module!!.log(errMsg)
-        } else {
-            Log.e("MiCTS", errMsg)
-        }
+        module?.log(errMsg) ?: Log.e("MiCTS", errMsg)
     }.getOrDefault(false)
 }
 

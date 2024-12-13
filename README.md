@@ -1,6 +1,6 @@
 # MiCTS
 
-[![Downloads](https://img.shields.io/github/downloads/parallelcc/MiCTS/total)](https://github.com/parallelcc/MiCTS/releases) [![Release](https://img.shields.io/github/v/release/parallelcc/MiCTS)](https://github.com/parallelcc/MiCTS/releases/latest)
+[![Stars](https://img.shields.io/github/stars/parallelcc/MiCTS)](https://github.com/parallelcc/MiCTS) [![Downloads](https://img.shields.io/github/downloads/parallelcc/MiCTS/total)](https://github.com/parallelcc/MiCTS/releases) [![Release](https://img.shields.io/github/v/release/parallelcc/MiCTS)](https://github.com/parallelcc/MiCTS/releases/latest)
 
 简体中文&nbsp;&nbsp;|&nbsp;&nbsp;[English](https://github.com/parallelcc/MiCTS/blob/main/README_en.md)
 
@@ -14,9 +14,10 @@
 
 
 2. 安装并打开MiCTS
-    - 如果幸运的话，在不用LSPosed的情况下，打开MiCTS就会直接触发圈定即搜
-    - 如果没有反应，则需要在LSPosed里激活模块，在[MiCTS设置](#进入设置的方式)里开启`Google机型伪装`后，强制重启Google
-    - 如果还是没有反应，尝试清除Google的数据，然后打开Google，再强制重启Google
+    - 如果幸运的话，在不需要root的情况下，打开MiCTS就会直接触发圈定即搜
+    - 如果没有反应，大概率是因为Google对你的设备禁用了圈定即搜功能（可以通过在Logcat日志中查找`Omni invocation failed: not enabled`确认），在有root的情况下，可以尝试以下方法：
+        - 在LSPosed里激活模块，在[MiCTS设置](#进入设置的方式)里开启`Google机型伪装`后，强制重启Google
+        - 如果还是不行，使用[GMS-Flags](https://github.com/polodarb/GMS-Flags)，将`com.google.android.apps.search.omnient.device`的flag`45631784`设为true
 
 
 3. 设置触发方式
@@ -39,8 +40,9 @@
 需要在LSPosed里激活模块
 
 - 系统触发服务：触发所使用的系统服务，只会显示当前支持的选项，依赖作用域选择系统框架
-   - VIS：支持Android 9–15，需要将默认助理应用设置为Google，触发时屏幕边缘会闪，没有激活模块的情况下只能使用此服务
+   - VIS：支持Android 9–15，需要将默认助理应用设置为Google，触发时一些设备的屏幕边缘会闪，没有激活模块的情况下只能使用此服务
    - CSHelper：支持Android 14 QPR3及以上，不需要设置默认助理应用，触发时屏幕边缘不会闪
+   - CSService：支持Android 15及以上，圈定即搜专用的服务，效果同CSHelper
 
 
 - 长按小白条触发：仅支持小米设备，依赖作用域选择系统桌面
@@ -57,10 +59,6 @@
 
 ## 常见问题
 
-### 需要root吗？
-
-正如[使用方法](#使用方法)第2步中所说，没有root的情况下也可能直接成功触发，这取决于设备的配置，像很多小米设备都可以无需root直接触发，所以你可以尝试一下。但如果不行的话，那原因大概就是没有通过Google的设备检查，因此需要进行机型伪装，这就需要使用LSPosed模块里的功能
-
 ### 提示“触发失败！”
 
 大概率是没有将Google设为默认助理，检查一下
@@ -69,7 +67,7 @@
 
 Google不是最新版，更新一下
 
-### 有时屏幕边缘会闪，但无法成功触发，手动打开Google后才会出现刚才圈定即搜的界面
+### 有时无法成功触发，手动打开Google后才会出现刚才圈定即搜的界面
 
 原因应该是墓碑机制导致的，看看手机有没有相关的设置可以把Google加到白名单里，比如电池优化选择无限制等，在模块设置里`系统触发服务`使用`CSHelper`应该没有这个问题
 

@@ -6,11 +6,11 @@ import com.parallelc.micts.config.TriggerService
 import com.parallelc.micts.config.XposedConfig.CONFIG_NAME
 import com.parallelc.micts.config.XposedConfig.DEFAULT_CONFIG
 import com.parallelc.micts.config.XposedConfig.KEY_DEVICE_SPOOF
-import com.parallelc.micts.config.XposedConfig.KEY_GESTURE_TRIGGER
 import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_BRAND
 import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_DEVICE
 import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_MANUFACTURER
 import com.parallelc.micts.config.XposedConfig.KEY_SPOOF_MODEL
+import com.parallelc.micts.hooker.CSMSHooker
 import com.parallelc.micts.hooker.InvokeOmniHooker
 import com.parallelc.micts.hooker.LongPressHomeHooker
 import com.parallelc.micts.hooker.NavStubViewHooker
@@ -39,6 +39,15 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
                 log("hook VIMS fail", e)
             }
         }
+
+        if (TriggerService.getSupportedServices().contains(TriggerService.CSService)) {
+            runCatching {
+                CSMSHooker.hook(param)
+            }.onFailure { e ->
+                log("hook CSMS fail", e)
+            }
+        }
+
         if (Build.MANUFACTURER == "Xiaomi") {
             runCatching {
                 LongPressHomeHooker.hook(param)
@@ -56,7 +65,6 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
         when (param.packageName) {
             "com.miui.home", "com.mi.android.globallauncher" -> {
-                if (!prefs.getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) return
                 runCatching {
                     val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
                     hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)

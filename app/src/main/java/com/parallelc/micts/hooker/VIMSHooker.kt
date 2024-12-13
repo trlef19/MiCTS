@@ -27,11 +27,11 @@ class VIMSHooker {
 
         @SuppressLint("PrivateApi")
         fun hook(param: SystemServerLoadedParam) {
-            val vims = param.classLoader.loadClass("com.android.server.voiceinteraction.VoiceInteractionManagerService\$VoiceInteractionManagerServiceStub")
+            val vimsStub = param.classLoader.loadClass("com.android.server.voiceinteraction.VoiceInteractionManagerService\$VoiceInteractionManagerServiceStub")
             val rString = param.classLoader.loadClass("com.android.internal.R\$string")
             contextualSearchKey = rString.getField("config_defaultContextualSearchKey").getInt(null)
             contextualSearchPackageName = rString.getField("config_defaultContextualSearchPackageName").getInt(null)
-            module!!.hook(vims.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Integer.TYPE, String::class.java), ShowSessionHooker::class.java)
+            module!!.hook(vimsStub.getDeclaredMethod("showSessionFromSession", IBinder::class.java, Bundle::class.java, Int::class.java, String::class.java), ShowSessionHooker::class.java)
         }
 
         @XposedHooker
@@ -40,13 +40,20 @@ class VIMSHooker {
                 @JvmStatic
                 @BeforeInvocation
                 fun before(callback: BeforeHookCallback) : MethodUnhooker<Method>? {
-                    return runCatching {
-                        if (!(callback.args[1] as Bundle).getBoolean("micts_trigger", false)) return@runCatching null
+                    runCatching {
+                        val bundle = callback.args[1] as Bundle
+                        if (!bundle.getBoolean("micts_trigger", false)) return@runCatching null
                         Binder.clearCallingIdentity()
-                        module!!.hook(Resources::class.java.getDeclaredMethod("getString", Int::class.java), GetStringHooker::class.java)
+                        val triggerService = module!!.getRemotePreferences(CONFIG_NAME).getInt(KEY_TRIGGER_SERVICE, DEFAULT_CONFIG[KEY_TRIGGER_SERVICE] as Int)
+                        if (triggerService == TriggerService.CSService.ordinal) {
+                            callback.returnAndSkip(CSMSHooker.startContextualSearch(bundle.getInt("omni.entry_point")))
+                        } else {
+                            return module!!.hook(Resources::class.java.getDeclaredMethod("getString", Int::class.java), GetStringHooker::class.java)
+                        }
                     }.onFailure { e ->
                         module!!.log("hook resources fail", e)
-                    }.getOrNull()
+                    }
+                    return null
                 }
 
                 @JvmStatic
