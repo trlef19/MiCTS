@@ -1,11 +1,13 @@
 package com.parallelc.micts.hooker
 
+import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import com.parallelc.micts.config.XposedConfig.CONFIG_NAME
 import com.parallelc.micts.config.XposedConfig.DEFAULT_CONFIG
 import com.parallelc.micts.config.XposedConfig.KEY_GESTURE_TRIGGER
+import com.parallelc.micts.config.XposedConfig.KEY_VIBRATE
 import com.parallelc.micts.module
 import com.parallelc.micts.ui.activity.triggerCircleToSearch
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
@@ -13,6 +15,7 @@ import io.github.libxposed.api.XposedInterface.Hooker
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
 import io.github.libxposed.api.annotations.AfterInvocation
 import io.github.libxposed.api.annotations.XposedHooker
+import java.lang.ref.WeakReference
 import java.lang.reflect.Field
 import kotlin.math.abs
 
@@ -23,6 +26,7 @@ class NavStubViewHooker {
         private lateinit var mInitX: Field
         private lateinit var mCurrY: Field
         private lateinit var mInitY: Field
+        private var mContext: WeakReference<Context>? = null
 
         fun hook(param: PackageLoadedParam) {
             val navStubView = param.classLoader.loadClass("com.miui.home.recents.NavStubView")
@@ -40,6 +44,7 @@ class NavStubViewHooker {
                     mInitY = navStubView.getDeclaredField("mInitY")
                     mInitY.isAccessible = true
                     module!!.hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), OnTouchEventHooker::class.java)
+                    module!!.hook(navStubView.getDeclaredConstructor(Context::class.java), ConstructorHooker::class.java)
                 }
         }
 
@@ -47,8 +52,13 @@ class NavStubViewHooker {
         class OnTouchEventHooker : Hooker {
             companion object {
                 private val mCheckLongPress = Runnable {
-                    if (module!!.getRemotePreferences(CONFIG_NAME).getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) {
-                        triggerCircleToSearch(1)
+                    val prefs = module!!.getRemotePreferences(CONFIG_NAME)
+                    if (prefs.getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) {
+                        triggerCircleToSearch(
+                            1,
+                            mContext?.get(),
+                            prefs.getBoolean(KEY_VIBRATE, DEFAULT_CONFIG[KEY_VIBRATE] as Boolean)
+                        )
                     }
                 }
 
@@ -70,6 +80,17 @@ class NavStubViewHooker {
                     }.onFailure { e ->
                         module!!.log("NavStubViewHooker onTouchEvent fail", e)
                     }
+                }
+            }
+        }
+
+        @XposedHooker
+        class ConstructorHooker : Hooker {
+            companion object {
+                @JvmStatic
+                @AfterInvocation
+                fun after(callback: AfterHookCallback) {
+                    mContext = WeakReference(callback.args[0] as Context)
                 }
             }
         }

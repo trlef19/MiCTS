@@ -57,6 +57,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     var triggerServiceExpanded = mutableStateOf(false)
 
     init {
+        appConfigPref = application.getSharedPreferences(AppConfig.CONFIG_NAME, MODE_PRIVATE)
+        _appConfig.value = AppConfig.DEFAULT_CONFIG + appConfigPref.all.filterValues { it != null }.mapValues { it.value as Any }
+        _locale.value = Language.entries[_appConfig.value[AppConfig.KEY_LANGUAGE] as Int].toLocale()
         XposedServiceHelper.registerListener(object : XposedServiceHelper.OnServiceListener {
             override fun onServiceBind(service: XposedService) {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -68,6 +71,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                         _xposedConfig.value.forEach {
                             checkScope(scope, it.key, it.value)
                         }
+                        updateXposedConfig(XposedConfig.KEY_VIBRATE, _appConfig.value[AppConfig.KEY_VIBRATE]!!)
                     }.onFailure { e ->
                         if (e is ServiceException) {
                             _xposedService.value = null
@@ -82,9 +86,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 }
             }
         })
-        appConfigPref = application.getSharedPreferences(AppConfig.CONFIG_NAME, MODE_PRIVATE)
-        _appConfig.value = AppConfig.DEFAULT_CONFIG + appConfigPref.all.filterValues { it != null }.mapValues { it.value as Any }
-        _locale.value = Language.entries[_appConfig.value[AppConfig.KEY_LANGUAGE] as Int].toLocale()
     }
 
     fun updateAppConfig(key: String, value: Any) {
@@ -99,6 +100,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             when (value) {
                 is Long -> appConfigPref.edit().putLong(key, value).apply()
                 is Int -> appConfigPref.edit().putInt(key, value).apply()
+                is Boolean -> appConfigPref.edit().putBoolean(key, value).apply()
             }
         }
     }

@@ -35,6 +35,7 @@ object XposedConfig {
     const val KEY_SPOOF_BRAND = "spoof_brand"
     const val KEY_SPOOF_MODEL = "spoof_model"
     const val KEY_SPOOF_DEVICE = "spoof_device"
+    const val KEY_VIBRATE = "vibrate"
 
     val DEFAULT_CONFIG = mapOf<String, Any>(
         KEY_TRIGGER_SERVICE to TriggerService.getSupportedServices().last().ordinal,
@@ -45,5 +46,6 @@ object XposedConfig {
         KEY_SPOOF_BRAND to "google",
         KEY_SPOOF_MODEL to "Pixel 8 Pro",
         KEY_SPOOF_DEVICE to "husky",
+        KEY_VIBRATE to false,
     )
 }

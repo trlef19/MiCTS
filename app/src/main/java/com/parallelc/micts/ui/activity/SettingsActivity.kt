@@ -238,6 +238,19 @@ fun SettingsPage(
         )
 
         ListItem(
+            headlineContent = { Text(stringResource(R.string.vibrate)) },
+            trailingContent = {
+                Switch(
+                    checked = appConfig[AppConfig.KEY_VIBRATE] as Boolean,
+                    onCheckedChange = {
+                        viewModel.updateAppConfig(AppConfig.KEY_VIBRATE, it)
+                        xposedService?.run { viewModel.updateXposedConfig(XposedConfig.KEY_VIBRATE, it) }
+                    }
+                )
+            }
+        )
+
+        ListItem(
             headlineContent = {
                 Text(
                     text = stringResource(R.string.module_settings),
