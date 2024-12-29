@@ -65,16 +65,15 @@ class ModuleMain(base: XposedInterface, param: ModuleLoadedParam) : XposedModule
 
         when (param.packageName) {
             "com.miui.home", "com.mi.android.globallauncher" -> {
-                runCatching {
+                val skipHookTouch = runCatching {
                     val circleToSearchHelper = param.classLoader.loadClass("com.miui.home.recents.cts.CircleToSearchHelper")
                     hook(circleToSearchHelper.getDeclaredMethod("invokeOmni", Context::class.java, Int::class.java, Int::class.java), InvokeOmniHooker::class.java)
-                    return
                 }.onFailure { e ->
                     log("hook CircleToSearchHelper fail", e)
-                }
+                }.isSuccess
 
                 runCatching {
-                    NavStubViewHooker.hook(param)
+                    NavStubViewHooker.hook(param, skipHookTouch)
                 }.onFailure { e ->
                     log("hook NavStubView fail", e)
                 }

@@ -11,9 +11,11 @@ import com.parallelc.micts.config.XposedConfig.KEY_VIBRATE
 import com.parallelc.micts.module
 import com.parallelc.micts.ui.activity.triggerCircleToSearch
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
+import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import io.github.libxposed.api.XposedInterface.Hooker
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
 import io.github.libxposed.api.annotations.AfterInvocation
+import io.github.libxposed.api.annotations.BeforeInvocation
 import io.github.libxposed.api.annotations.XposedHooker
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
@@ -28,24 +30,39 @@ class NavStubViewHooker {
         private lateinit var mInitY: Field
         private var mContext: WeakReference<Context>? = null
 
-        fun hook(param: PackageLoadedParam) {
+        fun hook(param: PackageLoadedParam, skipHookTouch: Boolean) {
             val navStubView = param.classLoader.loadClass("com.miui.home.recents.NavStubView")
+            runCatching {
+                module!!.hook(navStubView.getDeclaredMethod("startRecentsAnimationPre"), SkipHooker::class.java)
+            }
+            if (skipHookTouch) return
             runCatching { navStubView.getDeclaredField("mCheckLongPress") }
                 .onSuccess { throw Exception("mCheckLongPress exists") }
-                .onFailure {
-                    mCurrAction = navStubView.getDeclaredField("mCurrAction")
-                    mCurrAction.isAccessible = true
-                    mCurrX = navStubView.getDeclaredField("mCurrX")
-                    mCurrX.isAccessible = true
-                    mInitX = navStubView.getDeclaredField("mInitX")
-                    mInitX.isAccessible = true
-                    mCurrY = navStubView.getDeclaredField("mCurrY")
-                    mCurrY.isAccessible = true
-                    mInitY = navStubView.getDeclaredField("mInitY")
-                    mInitY.isAccessible = true
-                    module!!.hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), OnTouchEventHooker::class.java)
-                    module!!.hook(navStubView.getDeclaredConstructor(Context::class.java), ConstructorHooker::class.java)
+            mCurrAction = navStubView.getDeclaredField("mCurrAction")
+            mCurrAction.isAccessible = true
+            mCurrX = navStubView.getDeclaredField("mCurrX")
+            mCurrX.isAccessible = true
+            mInitX = navStubView.getDeclaredField("mInitX")
+            mInitX.isAccessible = true
+            mCurrY = navStubView.getDeclaredField("mCurrY")
+            mCurrY.isAccessible = true
+            mInitY = navStubView.getDeclaredField("mInitY")
+            mInitY.isAccessible = true
+            module!!.hook(navStubView.getDeclaredMethod("onTouchEvent", MotionEvent::class.java), OnTouchEventHooker::class.java)
+            module!!.hook(navStubView.getDeclaredConstructor(Context::class.java), ConstructorHooker::class.java)
+        }
+
+        @XposedHooker
+        class SkipHooker : Hooker {
+            companion object {
+                @JvmStatic
+                @BeforeInvocation
+                fun before(callback: BeforeHookCallback) {
+                    if (module!!.getRemotePreferences(CONFIG_NAME).getBoolean(KEY_GESTURE_TRIGGER, DEFAULT_CONFIG[KEY_GESTURE_TRIGGER] as Boolean)) {
+                        callback.returnAndSkip(null)
+                    }
                 }
+            }
         }
 
         @XposedHooker
